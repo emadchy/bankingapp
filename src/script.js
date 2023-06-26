@@ -77,9 +77,11 @@ const calcDisplayBalance = function(acc){
 
 }
 
-const displayMovements = function(movements){
+const displayMovements = function(movements,sort = false){
   containerMovements.innerHTML = '';
-  movements.forEach(function(mov,i){
+const movs = sort ? movements.slice().sort((a,b) => a - b) : movements;
+
+  movs.forEach(function(mov,i){
       const type = mov > 0 ? 'deposit' : 'withdrawal';
       const html = `
         <div class="movements__row">
@@ -163,10 +165,113 @@ inputTransferAmount.value = inputTransferTo.value = '';
   }
 });
 
+btnClose.addEventListener('click',function(e){
+  e.preventDefault();
+  if(inputCloseUsername.value === currentAccount.username && Number(inputClosePin.value) === currentAccount.pin){
+    const index = accounts.findIndex(acc => acc.username === currentAccount.username);
+    console.log(index);
+    //DELETE ACCOUNT
+    accounts.splice(index, 1);
+
+    //HIDE UI
+    containerApp.style.opacity = 0;
+    console.log(accounts)
+  }
+  inputCloseUsername.value = inputClosePin = '';
+ 
+})
+
+btnLoan.addEventListener('click', function(e){
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if(amount > 0 && currentAccount.movements.some(mov => mov >= 0.1 * amount)){
+    //add movement
+    currentAccount.movements.push(amount);
+
+    //update UI
+    updateUI(currentAccount);
+
+  }
+  inputLoanAmount.value ='';
+
+})
+
+let sorted = false;
+
+btnSort.addEventListener('click',function(e){
+  e.preventDefault();
+  displayMovements(currentAccount.movements, !sorted);
+  sorted = !sorted;
+})
+
+
+
+
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////LECTURES
 
+// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300]
+// console.log(movements);
+
+// const owners = ['Jonas','Zach','Adam','Martha'];
+// console.log(owners.sort());
+// console.log(owners);
+
+// //Numbers
+// console.log(movements);
+
+// //return < 0 a,b (keep order)
+// //return > 0 b a (switch order)
+// movements.sort((a, b) => b - a);
+// console.log(movements);
+
+
+
+// //EQUALITY
+// console.log(movements.includes(-130));
+// // //CONDITION
+// const anyDeposits = movements.some(mov => mov > 1500);
+// console.log(anyDeposits);
+
 // displayMovements(account1.movements); 
+
+// //EVERY
+// console.log(movements.every(mov => mov > 0))
+// console.log(account4.movements.every(mov => mov > 0));
+
+// //Separate Call back 
+// const deposit = mov => mov > 0;
+// console.log(movements.some(deposit));
+// console.log(movements.every(deposit));
+// console.log(movements.filter(deposit));
+
+// // const arr= [[1,2,3],[4,5,6],7,8];
+// // const arrDeep= [[[1,2],3],[4,[5,6]],7,8];
+// // console.log(arrDeep.flat(2));
+
+// const accountMovements = accounts.map(acc => acc.movements);
+
+// const allMovements = accountMovements.flat();
+
+
+// const overallBalance = allMovements.reduce((acc,mov) => acc+mov,0);
+// console.log(overallBalance);
+// //flat
+// const overalBalance = accounts.map(acc => acc.movements).flat().reduce((acc,mov) => acc+mov,0);
+// console.log(overalBalance);
+
+
+// //flatmap
+// const overlBalance = accounts.flatMap(acc => acc.movements).reduce((acc,mov) => acc+mov,0);
+// console.log(overlBalance);
+
+
+
+
+ 
 
 // const checkDogs = function(dogsJulia,dogsKate){
 //   const  juliaCorrected = dogsJulia.slice();
